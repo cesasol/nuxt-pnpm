@@ -1,6 +1,7 @@
 <template>
   <div>
-    <nuxt/>
+    <!-- eslint-disable-next-line -->
+    <nuxt />
   </div>
 </template>
 
