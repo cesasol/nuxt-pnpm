@@ -1,5 +1,16 @@
 const pkg = require('./package')
 
+function replaceLoaders(use) {
+  if (use.loader) {
+    if (use.loader.indexOf('babel-loader') !== -1) {
+      use.loader = 'babel-loader'
+    }
+  } else if (use.indexOf('babel-loader') !== -1) {
+    // eslint-disable-next-line no-param-reassign
+    use = 'babel-loader'
+  }
+}
+
 module.exports = {
   mode: 'universal',
 
@@ -58,7 +69,7 @@ module.exports = {
    */
   build: {
     // Parallel and cache doesn't work, and I don't know why
-    // parallel: true,
+    parallel: true,
     // cache: true,
     babel: {
       presets: ({ isServer }) => [
@@ -94,10 +105,16 @@ module.exports = {
       isClient
     }) {
       // fix pnpm
-      const babelLoader = config.module.rules.find(
-        rule => rule.test.toString() === /\.jsx?$/.toString()
-      )
-      babelLoader.use[0].loader = require.resolve('babel-loader')
+      config.module.rules.forEach(rule => {
+        if (rule.use) {
+          rule.use.forEach(replaceLoaders)
+        }
+        if (rule.oneOf) {
+          rule.oneOf.forEach(oneOf => {
+            oneOf.use.forEach(replaceLoaders)
+          })
+        }
+      })
       // Run ESLINT on save
       if (isDev && isClient) {
         config.module.rules.push({
