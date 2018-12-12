@@ -48,12 +48,18 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
-  modules: [],
+  modules: [
+    '@nuxtjs/google-analytics',
+    '@nuxtjs/pwa',
+  ],
 
   /*
    ** Build configuration
    */
   build: {
+    // Parallel and cache doesn't work, and I don't know why
+    // parallel: true,
+    // cache: true,
     babel: {
       presets: ({ isServer }) => [
         [
@@ -61,15 +67,16 @@ module.exports = {
           {
             buildTarget: isServer ? 'server' : 'client',
             // Incluir polyfills globales es mejor que no hacerlo
-            useBuiltIns: 'entry',
+            useBuiltIns: 'entry', // for 'usage' see bellow
             // Un poco menos de código a cambio de posibles errores
-            loose: true,
+            loose: true, // A little personal but good
             // Nuxt quiere usar ie 9, yo no.
             targets: isServer ? { node: 'current' } : {},
           },
         ],
       ],
       plugins: [
+        '@babel/plugin-syntax-dynamic-import',
         // Si usas useBuiltIns: usage, descomenta el sig código
         // [
         //   '@babel/plugin-transform-runtime',
